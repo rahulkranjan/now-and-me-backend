@@ -26,10 +26,12 @@ class ThoughtList(ListAPIView):
         return queryset
 
     def post(self, request, format=None):
-        anonymous = False
-        if request.data.get('author') == None:
-            anonymous = True
 
+        # Anonymous logic
+        anonymous = False
+        if request.data.get('author') == None or request.data.get('is_anonymous') == 'true':
+            anonymous = True
+        
         serializer = ThoughtCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(is_anonymous = anonymous)
@@ -78,9 +80,14 @@ class ReplyList(ListAPIView):
         return queryset
 
     def post(self, request, format=None):
+
+        anonymous = False
+        if request.data.get('author') == None or request.data.get('is_anonymous') == 'true':
+            anonymous = True
+            
         serializer = ReplySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(is_anonymous = anonymous)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
