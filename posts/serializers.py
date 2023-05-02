@@ -16,13 +16,16 @@ class ThoughtSerializer(serializers.ModelSerializer):
     # if is_anonymous is true, then author is anonymous
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        representation['created_at'] = instance.created_at.strftime("%d %b %Y %H:%M")
+        representation['modified_at'] = instance.modified_at.strftime("%d %b %Y %H:%M")
+
         if representation['is_anonymous'] == True:
             representation['author'] = {
                 'name': 'Anonymous',
                 'avatar': None
             }
         else:
-            representation['author'] = User.objects.filter(id=representation['author']).values('name', 'avatar')[0]
+            representation['author'] = User.objects.filter(id=representation['author']).values('name', 'avatar')
         return representation
 
     def get_replys(self, instance):
@@ -44,6 +47,8 @@ class ReplySerializer(serializers.ModelSerializer):
     # if is_anonymous is true, then author is anonymous
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        representation['created_at'] = instance.created_at.strftime("%d %b %Y %H:%M")
+        representation['modified_at'] = instance.modified_at.strftime("%d %b %Y %H:%M")
         if representation['is_anonymous'] == True:
             representation['author'] = {
                 'name': 'Anonymous',
@@ -52,3 +57,9 @@ class ReplySerializer(serializers.ModelSerializer):
         else:
             representation['author'] = User.objects.filter(id=representation['author']).values('name', 'avatar')
         return representation
+    
+
+class ReplyCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
+        fields = '__all__'

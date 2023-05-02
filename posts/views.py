@@ -8,7 +8,7 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from posts.models import *
-from posts.serializers import ReplySerializer, ThoughtCreateSerializer, ThoughtSerializer
+from posts.serializers import ReplyCreateSerializer, ReplySerializer, ThoughtCreateSerializer, ThoughtSerializer
 
 
 
@@ -28,14 +28,9 @@ class ThoughtList(ListAPIView):
 
     def post(self, request, format=None):
 
-        # Anonymous logic
-        anonymous = False
-        if request.data.get('author') == None or request.data.get('is_anonymous') == 'true':
-            anonymous = True
-        
         serializer = ThoughtCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(is_anonymous = anonymous)
+            serializer.save(author_id = request.user.id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -52,43 +47,13 @@ class ThoughtDetail(APIView):
         serializer = ThoughtSerializer(val)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        val = self.get_object(pk)
-        serializer = ThoughtCreateSerializer(
-            val, request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        val = self.get_object(pk)
-        val.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ReplyList(ListAPIView):
-
-    serializer_class = ReplySerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['id', ]
-
-    renderer_classes = [JSONRenderer]
-    # pagination_class = SmallPagination
-
-    def get_queryset(self):
-        queryset = Reply.objects.filter().order_by('-id')
-        return queryset
-
     def post(self, request, format=None):
-
-        anonymous = False
-        if request.data.get('author') == None or request.data.get('is_anonymous') == 'true':
-            anonymous = True
-
-        serializer = ReplySerializer(data=request.data)
+        serializer = ReplyCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(is_anonymous = anonymous)
+            serializer.save(author_id = request.user.id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -96,7 +61,7 @@ class ReplyList(ListAPIView):
 class ReplyDetail(APIView):
     def get_object(self, pk):
         try:
-            return Reply.objects.get(pk=pk, )
+            return Reply.objects.get(pk=pk, author = self.request.user)
         except Reply.DoesNotExist:
             raise Http404
 
@@ -107,7 +72,7 @@ class ReplyDetail(APIView):
 
     def put(self, request, pk, format=None):
         val = self.get_object(pk)
-        serializer = ReplySerializer(
+        serializer = ReplyCreateSerializer(
             val, request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -117,7 +82,7 @@ class ReplyDetail(APIView):
     def delete(self, request, pk, format=None):
         val = self.get_object(pk)
         val.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response("Delete Successful",status=status.HTTP_204_NO_CONTENT)
     
 class UserThoughtList(ListAPIView):
 
@@ -134,7 +99,7 @@ class UserThoughtList(ListAPIView):
     
     def get_object(self, pk):
         try:
-            return Thought.objects.get(pk=pk, )
+            return Thought.objects.get(pk=pk, author = self.request.user)
         except Thought.DoesNotExist:
             raise Http404
     
@@ -146,3 +111,8 @@ class UserThoughtList(ListAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        val = self.get_object(pk)
+        val.delete()
+        return Response("Delete Successful",status=status.HTTP_204_NO_CONTENT)

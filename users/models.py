@@ -67,7 +67,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, blank=True, null=True)
     roles = models.ForeignKey(Role, on_delete=models.CASCADE, default=3)
     contact = models.BigIntegerField(default=0, unique=True)
