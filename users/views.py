@@ -1,9 +1,6 @@
-import datetime
 from django.http import Http404, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from inventory_management.whatsapp_sms import send_whatsapp_otp, sendAccountGreating, sendGreating
-from organisation_config.models import Organisation, OrganisationMember
 from users.serializers import *
 from users.models import User
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,14 +10,6 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from django.http import Http404
-from rest_framework import permissions
-from django.db import transaction, IntegrityError
-import pyotp
-import base64
-from datetime import datetime, timedelta
-from rest_framework_simplejwt.tokens import RefreshToken
-from inventory_management.settings import default_otp
-from django.db.models import  F
 
 
 @api_view(['GET'])
