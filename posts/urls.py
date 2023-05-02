@@ -8,6 +8,8 @@ urlpatterns = [
     path('thought/<pk>/', ThoughtDetail.as_view()),
     path('reply', ReplyList.as_view()),
     path('reply/<pk>/', ReplyDetail.as_view()),
+    path('user-thought', UserThoughtList.as_view()),
+    path('user-thought/<pk>/', UserThoughtList.as_view()),
 
 
 

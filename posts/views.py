@@ -16,12 +16,13 @@ class ThoughtList(ListAPIView):
 
     serializer_class = ThoughtSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['id', ]
+    filterset_fields = ['id','is_anonymous' ]
 
     renderer_classes = [JSONRenderer]
     # pagination_class = SmallPagination
 
     def get_queryset(self):
+
         queryset = Thought.objects.filter().order_by('-id')
         return queryset
 
@@ -84,7 +85,7 @@ class ReplyList(ListAPIView):
         anonymous = False
         if request.data.get('author') == None or request.data.get('is_anonymous') == 'true':
             anonymous = True
-            
+
         serializer = ReplySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(is_anonymous = anonymous)
@@ -117,3 +118,31 @@ class ReplyDetail(APIView):
         val = self.get_object(pk)
         val.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class UserThoughtList(ListAPIView):
+
+    serializer_class = ThoughtSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['id', ]
+
+    renderer_classes = [JSONRenderer]
+    # pagination_class = SmallPagination
+
+    def get_queryset(self):
+        queryset = Thought.objects.filter(author_id = self.request.user.id).order_by('-id')
+        return queryset
+    
+    def get_object(self, pk):
+        try:
+            return Thought.objects.get(pk=pk, )
+        except Thought.DoesNotExist:
+            raise Http404
+    
+    def put(self, request, pk, format=None):
+        val = self.get_object(pk)
+        serializer = ThoughtCreateSerializer(
+            val, request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
