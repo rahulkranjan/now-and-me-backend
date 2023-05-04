@@ -69,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, blank=True, null=True)
-    roles = models.ForeignKey(Role, on_delete=models.CASCADE, default=3)
+    roles = models.ForeignKey(Role, on_delete=models.CASCADE, default=1)
     contact = models.BigIntegerField(default=0, unique=True)
     avatar = models.FileField(
         upload_to='avtar/', blank=True, null=True)

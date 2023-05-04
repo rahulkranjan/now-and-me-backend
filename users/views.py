@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from django.http import Http404
+from rest_framework import permissions, status
 
 
 @api_view(['GET'])
@@ -24,6 +25,7 @@ class UserList(ListAPIView):
     lookup_field = 'id'
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['email', 'name', 'roles', 'id', 'contact']
+    permission_classes = [permissions.AllowAny,]
 
     search_fields = {
     }

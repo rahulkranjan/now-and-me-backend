@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-yudplbbwjpnag3)v)ui2mx2d(^&13si(w&)e5mj0-k#p(lez%p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["nowandme.up.railway.app",]
+ALLOWED_HOSTS = ["nowandme.up.railway.app","127.0.0.1"]
 
 
 # Application definition
@@ -82,10 +82,10 @@ WSGI_APPLICATION = 'nowandme.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': credentials.get('db_name'),
-        'USER': credentials.get('db_user'),
-        'PASSWORD': credentials.get('db_password'),
-        'HOST': credentials.get('db_host'),
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': '6LTR2yCfq51BukTNS1OJ',
+        'HOST': 'containers-us-west-5.railway.app',
         'PORT': '6827',
     }
 }
